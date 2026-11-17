@@ -1,0 +1,77 @@
+
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+group = 'com.karen.superrandomplus'
+version = '1.0.0'
+
+base {
+    archivesName = 'SUPER-RANDOM-PLUS'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            mods {
+                superrandomplus {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            mods {
+                superrandomplus {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    maven {
+        url = 'https://maven.minecraftforge.net'
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.23'
+}
+
+jar {
+    finalizedBy 'reobfJar'
+}
+
+processResources {
+    def replaceProperties = [
+        minecraft_version: '1.20.1',
+        minecraft_version_range: '[1.20.1,1.21)',
+        forge_version: '47.4.23',
+        forge_version_range: '[47.4.0,48)',
+        loader_version_range: '[47,)',
+        mod_id: 'superrandomplus',
+        mod_name: 'SUPER RANDOM PLUS',
+        mod_license: 'All Rights Reserved',
+        mod_version: project.version,
+        mod_authors: 'Karen Company',
+        mod_description: 'A random item mod with 1500 items for Minecraft 1.20.1.'
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand replaceProperties
+    }
+}
