@@ -6,7 +6,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +25,7 @@ public class SuperRandomPlus {
     public static final String MOD_ID = "superrandomplus";
 
     private static final Random RANDOM = new Random();
+
     private static final List<Item> COMMON = new ArrayList<>();
     private static final List<Item> RARE = new ArrayList<>();
     private static final List<Item> LEGENDARY = new ArrayList<>();
@@ -30,11 +33,27 @@ public class SuperRandomPlus {
     private static boolean loaded = false;
 
     public SuperRandomPlus() {
-        ModItems.ITEMS.register(
-            FMLJavaModLoadingContext.get().getModEventBus()
-        );
+        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        ModItems.ITEMS.register(modBus);
+        modBus.addListener(this::addCreativeItems);
 
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() != CreativeModeTabs.INGREDIENTS) return;
+
+        event.accept(ModItems.KAREN_CRYSTAL);
+        event.accept(ModItems.FIRE_GEM);
+        event.accept(ModItems.ICE_GEM);
+        event.accept(ModItems.SHADOW_ESSENCE);
+        event.accept(ModItems.MAGIC_DUST);
+        event.accept(ModItems.GOLDEN_HEART);
+        event.accept(ModItems.VOID_FRAGMENT);
+        event.accept(ModItems.LUCKY_STONE);
+        event.accept(ModItems.THUNDER_CORE);
+        event.accept(ModItems.KAREN_TOKEN);
     }
 
     private static void loadItems() {
@@ -98,6 +117,7 @@ public class SuperRandomPlus {
         if (pool.isEmpty()) return;
 
         Item item = pool.get(RANDOM.nextInt(pool.size()));
+
         event.getPlayer().getInventory().add(item.getDefaultInstance());
 
         event.getPlayer().sendSystemMessage(
@@ -109,3 +129,4 @@ public class SuperRandomPlus {
         );
     }
 }
+
