@@ -1,6 +1,7 @@
 
 package com.karen.superrandomplus;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,29 +23,31 @@ public class SuperRandomPlus {
     private static final List<Item> RANDOM_ITEMS = new ArrayList<>();
 
     public SuperRandomPlus() {
-        for (Item item : ForgeRegistries.ITEMS) {
-            if (item != Items.AIR && !item.getDefaultInstance().isEmpty()) {
-                RANDOM_ITEMS.add(item);
-            }
-        }
-
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (event.getPlayer().level().isClientSide()) {
-            return;
-        }
+        if (event.getPlayer().level().isClientSide()) return;
 
         if (RANDOM_ITEMS.isEmpty()) {
-            return;
+            for (Item item : ForgeRegistries.ITEMS) {
+                if (item != Items.AIR) {
+                    RANDOM_ITEMS.add(item);
+                }
+            }
         }
 
-        Item randomItem = RANDOM_ITEMS.get(
-            RANDOM.nextInt(RANDOM_ITEMS.size())
-        );
+        if (RANDOM_ITEMS.isEmpty()) return;
 
-        event.getPlayer().getInventory().add(randomItem.getDefaultInstance());
+        Item item = RANDOM_ITEMS.get(RANDOM.nextInt(RANDOM_ITEMS.size()));
+
+        event.getPlayer().getInventory().add(item.getDefaultInstance());
+
+        event.getPlayer().sendSystemMessage(
+            Component.literal("§6[SUPER RANDOM PLUS] §eYou received: §b"
+                + item.getDescription().getString())
+        );
     }
 }
+
