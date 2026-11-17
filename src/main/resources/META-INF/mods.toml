@@ -1,0 +1,27 @@
+
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="superrandomplus"
+version="1.0.0"
+displayName="SUPER RANDOM PLUS"
+authors="Karen Company"
+description='''
+A random item mod with 1500 items for Minecraft 1.20.1.
+'''
+
+[[dependencies.superrandomplus]]
+modId="forge"
+mandatory=true
+versionRange="[47.4.0,48)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.superrandomplus]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"
