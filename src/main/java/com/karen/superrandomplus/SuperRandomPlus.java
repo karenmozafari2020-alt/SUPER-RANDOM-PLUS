@@ -6,11 +6,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ public class SuperRandomPlus {
     public static final String MOD_ID = "superrandomplus";
 
     private static final Random RANDOM = new Random();
-
     private static final List<Item> COMMON = new ArrayList<>();
     private static final List<Item> RARE = new ArrayList<>();
     private static final List<Item> LEGENDARY = new ArrayList<>();
@@ -31,6 +30,10 @@ public class SuperRandomPlus {
     private static boolean loaded = false;
 
     public SuperRandomPlus() {
+        ModItems.ITEMS.register(
+            FMLJavaModLoadingContext.get().getModEventBus()
+        );
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -43,9 +46,7 @@ public class SuperRandomPlus {
             ItemStack stack = item.getDefaultInstance();
             if (stack.isEmpty()) continue;
 
-            Rarity rarity = item.getRarity(stack);
-
-            switch (rarity) {
+            switch (item.getRarity(stack)) {
                 case COMMON:
                     COMMON.add(item);
                     break;
@@ -97,7 +98,6 @@ public class SuperRandomPlus {
         if (pool.isEmpty()) return;
 
         Item item = pool.get(RANDOM.nextInt(pool.size()));
-
         event.getPlayer().getInventory().add(item.getDefaultInstance());
 
         event.getPlayer().sendSystemMessage(
@@ -105,8 +105,7 @@ public class SuperRandomPlus {
                 .withStyle(ChatFormatting.GOLD)
                 .append(Component.literal(label + " ")
                     .withStyle(color))
-                .append(Component.literal(item.getDescription().getString())
-                    .withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(item.getDescription().getString()))
         );
     }
 }
