@@ -8,6 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
+
     public static final DeferredRegister<Item> ITEMS =
         DeferredRegister.create(ForgeRegistries.ITEMS, SuperRandomPlus.MOD_ID);
 
@@ -27,3 +28,4 @@ public class ModItems {
             () -> new Item(new Item.Properties().rarity(rarity)));
     }
 }
+
