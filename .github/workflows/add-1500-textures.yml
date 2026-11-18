@@ -1,0 +1,49 @@
+name: Add 1500 textures from ZIP
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  add-textures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract ZIP and merge assets
+        run: |
+          python - <<'PY'
+          import zipfile, pathlib, shutil, json
+          zip_path = pathlib.Path("SUPER-RANDOM-PLUS-1500-TEXTURES.zip")
+          if not zip_path.exists():
+              raise SystemExit("Upload SUPER-RANDOM-PLUS-1500-TEXTURES.zip to the repository root first.")
+          tmp = pathlib.Path("_texture_patch")
+          if tmp.exists():
+              shutil.rmtree(tmp)
+          tmp.mkdir()
+          with zipfile.ZipFile(zip_path) as z:
+              z.extractall(tmp)
+          src = tmp / "src/main/resources/assets/superrandomplus"
+          dst = pathlib.Path("src/main/resources/assets/superrandomplus")
+          if not src.exists():
+              raise SystemExit("ZIP contents did not contain expected assets path.")
+          (dst / "models/item").mkdir(parents=True, exist_ok=True)
+          (dst / "textures/item").mkdir(parents=True, exist_ok=True)
+          (dst / "lang").mkdir(parents=True, exist_ok=True)
+          shutil.copytree(src / "models/item", dst / "models/item", dirs_exist_ok=True)
+          shutil.copytree(src / "textures/item", dst / "textures/item", dirs_exist_ok=True)
+          new_lang = json.loads((src / "lang/en_us.json").read_text(encoding="utf-8"))
+          lang_file = dst / "lang/en_us.json"
+          old_lang = json.loads(lang_file.read_text(encoding="utf-8")) if lang_file.exists() else {}
+          old_lang.update(new_lang)
+          lang_file.write_text(json.dumps(old_lang, ensure_ascii=False, indent=2), encoding="utf-8")
+          print("Copied 1500 item models and textures; merged English names.")
+          PY
+      - name: Commit assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/resources/assets/superrandomplus
+          git commit -m "Add 1500 generated item textures and models" || echo "No changes to commit"
+          git push
