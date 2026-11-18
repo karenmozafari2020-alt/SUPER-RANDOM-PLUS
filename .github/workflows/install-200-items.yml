@@ -1,0 +1,33 @@
+name: Install 200 Items Patch
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-200-items:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract patch ZIP
+        run: |
+          set -e
+          ZIP="ModItems-200-REAL-PATCH.zip"
+          test -f "$ZIP" || { echo "Missing $ZIP in repository root"; exit 1; }
+          mkdir patch
+          unzip -q "$ZIP" -d patch
+          find patch -name ModItems.java -print -quit | grep -q .
+          SRC=$(find patch -type f -name ModItems.java -print -quit | xargs dirname)
+          cp "$SRC/ModItems.java" src/main/java/com/karen/superrandomplus/ModItems.java
+          cp "$SRC/SuperRandomPlus.java" src/main/java/com/karen/superrandomplus/SuperRandomPlus.java
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/java/com/karen/superrandomplus/ModItems.java src/main/java/com/karen/superrandomplus/SuperRandomPlus.java
+          git commit -m "Register 200 Karen items" || echo "No changes to commit"
+          git push
