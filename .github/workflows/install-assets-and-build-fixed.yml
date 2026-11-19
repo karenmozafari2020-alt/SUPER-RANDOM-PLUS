@@ -1,0 +1,52 @@
+name: Install Assets and Build
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-assets-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle 8.8 (no wrapper required)
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Extract resource patch
+        run: |
+          set -e
+          ZIP="SUPER-RANDOM-PLUS-ASSETS-RECIPES-PATCH.zip"
+          test -f "$ZIP" || { echo "Missing $ZIP at repository root"; exit 1; }
+          unzip -oq "$ZIP" -d patch
+          test -d patch/src/main/resources
+          cp -a patch/src/main/resources/. src/main/resources/
+
+      - name: Build mod
+        run: gradle build --no-daemon
+
+      - name: Upload built mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-RANDOM-PLUS-build
+          path: build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit resource patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/resources
+          git commit -m "Add generated item textures models recipes and translations" || echo "No changes to commit"
+          git push
