@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "superrandomplus:item/thunder_core"
-  }
-}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "superrandomplus:item/thunder_core"}}

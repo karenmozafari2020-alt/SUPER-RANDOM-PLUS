@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "superrandomplus:item/golden_heart"
-  }
-}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "superrandomplus:item/golden_heart"}}

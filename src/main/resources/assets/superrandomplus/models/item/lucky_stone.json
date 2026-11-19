@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "superrandomplus:item/lucky_stone"
-  }
-}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "superrandomplus:item/lucky_stone"}}
