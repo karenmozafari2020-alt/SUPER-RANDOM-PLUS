@@ -1,0 +1,51 @@
+name: Install 1500 Items and Build
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Install patch
+        run: |
+          set -e
+          test -f SUPER-RANDOM-PLUS-1500-PATCH.zip
+          mkdir -p patch
+          unzip -oq SUPER-RANDOM-PLUS-1500-PATCH.zip -d patch
+          cp -r patch/src/main/java/com/karen/superrandomplus/. src/main/java/com/karen/superrandomplus/
+          mkdir -p src/main/resources/assets/superrandomplus
+          cp -r patch/src/main/resources/assets/superrandomplus/. src/main/resources/assets/superrandomplus/
+
+      - name: Build mod
+        run: gradle build --no-daemon
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-RANDOM-PLUS-1510-items
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Commit installed source and assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/java/com/karen/superrandomplus src/main/resources/assets/superrandomplus
+          git commit -m "Install 1500 random items and restore legacy abilities" || echo "No changes"
+          git push
