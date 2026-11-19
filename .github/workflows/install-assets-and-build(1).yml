@@ -1,0 +1,49 @@
+name: Install Item Textures Recipes and Build
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install resource patch
+        run: |
+          set -e
+          ZIP="SUPER-RANDOM-PLUS-ASSETS-RECIPES-PATCH.zip"
+          test -f "$ZIP" || { echo "Missing $ZIP in repository root"; exit 1; }
+          mkdir -p patch
+          unzip -q "$ZIP" -d patch
+          cp -R patch/src/main/resources/assets ./src/main/resources/
+          cp -R patch/src/main/resources/data ./src/main/resources/
+
+      - name: Build mod
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - name: Run Gradle build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --no-daemon
+
+      - name: Commit installed resources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/resources/assets src/main/resources/data
+          git commit -m "Add item textures and crafting recipes" || echo "No changes to commit"
+          git push
+
+      - name: Upload mod JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-RANDOM-PLUS-built-mod
+          path: build/libs/*.jar
+          if-no-files-found: error
