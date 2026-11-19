@@ -1,0 +1,67 @@
+name: Install 1500 Items and Build (Java Fix)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Extract and fix Java source errors
+        run: |
+          set -e
+          test -f SUPER-RANDOM-PLUS-1500-PATCH.zip
+          mkdir -p patch
+          unzip -oq SUPER-RANDOM-PLUS-1500-PATCH.zip -d patch
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("patch/src/main/java/com/karen/superrandomplus")
+          legacy = root / "LegacyAbilityItem.java"
+          random_item = root / "RandomAbilityItem.java"
+          if not legacy.exists() or not random_item.exists():
+              raise SystemExit("Patch ZIP missing expected Java source files")
+          s = legacy.read_text()
+          s = s.replace("net.minecraft.world.level.ServerLevel", "net.minecraft.server.level.ServerLevel")
+          legacy.write_text(s)
+          s = random_item.read_text()
+          s = s.replace("MobEffects[] effects", "MobEffect[] effects")
+          if "import net.minecraft.world.effect.MobEffect;" not in s:
+              s = s.replace("import net.minecraft.world.effect.MobEffects;", "import net.minecraft.world.effect.MobEffect;\nimport net.minecraft.world.effect.MobEffects;")
+          random_item.write_text(s)
+          PY
+          cp -r patch/src/main/java/com/karen/superrandomplus/. src/main/java/com/karen/superrandomplus/
+          mkdir -p src/main/resources/assets/superrandomplus
+          cp -r patch/src/main/resources/assets/superrandomplus/. src/main/resources/assets/superrandomplus/
+
+      - name: Build mod
+        run: gradle build --no-daemon
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-RANDOM-PLUS-1510-items-fixed
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Commit fixed source and assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/java/com/karen/superrandomplus src/main/resources/assets/superrandomplus
+          git commit -m "Fix Java imports and effects types for 1500 item patch" || echo "No changes"
+          git push
