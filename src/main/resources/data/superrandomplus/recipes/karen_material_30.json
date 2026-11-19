@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABC",
+    " B ",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_crystal"
+    },
+    "B": {
+      "item": "minecraft:coal"
+    },
+    "C": {
+      "item": "minecraft:phantom_membrane"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:karen_material_30",
+    "count": 2
+  }
+}

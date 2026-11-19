@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "B B",
+    " A ",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_crystal"
+    },
+    "B": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "C": {
+      "item": "minecraft:bone"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:karen_material_11",
+    "count": 1
+  }
+}

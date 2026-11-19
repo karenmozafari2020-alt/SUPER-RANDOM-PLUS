@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "B B",
+    " A ",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_crystal"
+    },
+    "B": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "item": "minecraft:prismarine_shard"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:karen_material_05",
+    "count": 2
+  }
+}

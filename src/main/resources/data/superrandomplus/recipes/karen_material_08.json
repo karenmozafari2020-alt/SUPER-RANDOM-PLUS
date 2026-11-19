@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "B B",
+    " A ",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_crystal"
+    },
+    "B": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "C": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:karen_material_08",
+    "count": 1
+  }
+}

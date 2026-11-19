@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    " A ",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_material_12"
+    },
+    "B": {
+      "item": "superrandomplus:karen_material_05"
+    },
+    "C": {
+      "item": "superrandomplus:karen_crystal"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:crystal_shovel_12"
+  }
+}

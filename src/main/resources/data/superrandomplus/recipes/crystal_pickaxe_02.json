@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "CBC",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "superrandomplus:karen_material_02"
+    },
+    "B": {
+      "item": "superrandomplus:karen_material_15"
+    },
+    "C": {
+      "item": "superrandomplus:karen_crystal"
+    }
+  },
+  "result": {
+    "item": "superrandomplus:crystal_pickaxe_02"
+  }
+}
