@@ -1,22 +1,20 @@
 package com.karen.superrandomplus;
 
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.Tiers;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * Registers 200 items for SUPER-RANDOM-PLUS.
- * 150 functional tools and 50 crafting materials.
+ * Registers generated items with locale-independent registry IDs.
  */
 public final class ModItems {
     public static final DeferredRegister<Item> ITEMS =
         DeferredRegister.create(ForgeRegistries.ITEMS, SuperRandomPlus.MOD_ID);
 
-    // Keep the existing special items
     public static final RegistryObject<Item> KAREN_CRYSTAL = simple("karen_crystal", Rarity.RARE);
     public static final RegistryObject<Item> FIRE_GEM = simple("fire_gem", Rarity.EPIC);
     public static final RegistryObject<Item> ICE_GEM = simple("ice_gem", Rarity.RARE);
@@ -60,17 +58,22 @@ public final class ModItems {
         });
     }
 
+    private static String idNumber(int i) {
+        // Locale.ROOT guarantees ASCII digits, even when Android/Java is set to Persian.
+        return String.format(Locale.ROOT, "%02d", i);
+    }
+
     private static void addTools(String kind, int count, String prefix) {
         for (int i = 1; i <= count; i++) {
             int rarity = (i % 4);
-            GENERATED.add(tool(prefix + String.format("%02d", i), kind, rarity));
+            GENERATED.add(tool(prefix + idNumber(i), kind, rarity));
         }
     }
 
     private static void addMaterials(String prefix, int count) {
         for (int i = 1; i <= count; i++) {
             final int r = i % 4;
-            GENERATED.add(ITEMS.register(prefix + String.format("%02d", i),
+            GENERATED.add(ITEMS.register(prefix + idNumber(i),
                 () -> new Item(new Item.Properties().rarity(r >= 3 ? Rarity.EPIC : r == 2 ? Rarity.RARE : Rarity.COMMON))));
         }
     }
@@ -82,10 +85,9 @@ public final class ModItems {
         addTools("shovel", 20, "crystal_shovel_");
         addTools("hoe", 15, "crystal_hoe_");
         addMaterials("karen_material_", 40);
-        // 20 special item registrations (generic items until custom effects are wired)
         for (int i = 1; i <= 20; i++) {
             final int rarity = i % 4;
-            GENERATED.add(ITEMS.register("karen_special_" + String.format("%02d", i),
+            GENERATED.add(ITEMS.register("karen_special_" + idNumber(i),
                 () -> new Item(new Item.Properties().rarity(rarity >= 3 ? Rarity.EPIC : rarity == 2 ? Rarity.RARE : Rarity.UNCOMMON))));
         }
     }
