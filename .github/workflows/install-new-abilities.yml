@@ -1,0 +1,57 @@
+name: Install New Abilities and Build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Install ability patch
+        run: |
+          set -e
+          ZIP="SUPER-RANDOM-PLUS-NEW-ABILITIES-PATCH.zip"
+          test -f "$ZIP" || { echo "Upload $ZIP to the repository root first."; exit 1; }
+          mkdir -p patch
+          unzip -oq "$ZIP" -d patch
+          SRC="patch/src/main/java/com/karen/superrandomplus"
+          test -f "$SRC/RandomAbilityItem.java"
+          test -f "$SRC/UniqueAbilityEngine.java"
+          mkdir -p src/main/java/com/karen/superrandomplus
+          cp "$SRC/RandomAbilityItem.java" src/main/java/com/karen/superrandomplus/
+          cp "$SRC/UniqueAbilityEngine.java" src/main/java/com/karen/superrandomplus/
+
+      - name: Build mod
+        run: gradle build --no-daemon
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-RANDOM-PLUS-new-abilities
+          path: build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit installed source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/java/com/karen/superrandomplus/RandomAbilityItem.java src/main/java/com/karen/superrandomplus/UniqueAbilityEngine.java
+          git commit -m "Add varied abilities to generated items" || echo "No changes to commit"
+          git push
